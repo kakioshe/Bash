@@ -1,0 +1,55 @@
+====================================================
+sysinfo.sh Documentation
+Louis Christopher Alan - 1506791762
+====================================================
+
+Main Function	:
+	This program is a "menu" program that will print information about operating system, hardware, and memory.
+Because we want the program to always loop until the user ask to exit, We do an infinite while loop so that the 
+program will always restart whenever it finished running a command. Because we want the program read the user input,
+we use the read function and pass the input command into "input" parameter. The user are free to choose between 1 - 5.
+
+	After the user input the specific command / option, the program will determine which command will be run by 
+using if then elif else command. Sections:
+	1. System status	: In this part, the user will be printed information about the user Username, OS, 
+				  Uptime, IP and Hostname. To get Username, we use uname which will return system
+				  information. To get the OS name, we use uname -sr which will return the os name.
+				  the uptime command will give current time, how long the system has been running,
+				  how many users are currently logged on, and system load avg in the past 1, 5, 15
+				  mins. But we only need the uptime time and the total of user, therefore we use awk
+				  to split. For IP, we use netstat which normally will give us network connections,
+				  routing tables, interface statistics, masquerade connections, and multi-cast 
+				  membership. We only need the one that is established connection with us, therefore
+				  we use grep, and also if the user run more than 1 terminal/virtual machine, there
+				  will be more than one established connection, therefore i use sort unique to only
+				  print once.
+
+	2. Hardware List	: To get the Machine Hardware, i use uname -m. and lshw ussually gives us detailed
+				  information of hardware configuration for example firmware version, mainboard conf,
+				  etc. But it will give us a long list. so i use the --short version, and use
+				  2> /dev/null to redirect the error so that there will be no error shown in the
+				  output as it will give an error message if we dont run it on super user mode.
+
+	3. Memory		: We wanted information about memory size and free memory, so we open /proc/meminfo
+				  and use grep to get the information we need. I use sed to edit the output so it 
+				  will be the same as shown in example. We also want the data to be MegaByte, so 
+				  i divide the input by 1024. After printing the meminfo, we use vmstat to print about
+				  the memory statistic and use ps aux to show the process. sort it by pcpu to see 
+				  which process uses the cpu the most and split it using head -n 11 to get the top 10
+
+	4. Hardware Detail	: In 4, we want the user to choose between 3 option. So we implement the same thing as
+				  before
+		1. CPU			: To get CPU Information we need to access /proc/cpuinfo and use grep to 
+					  select the information. We also use sed and sort -u to edit the output and 
+					  make it unique.
+		2. Block Devices	: We use lsblk to list information about block devices. It reads the sysfs
+					  filesystem and udev db to gather information. Lsblk prints all block devices
+					  (except RAM) in a tree like format, just like we need.
+		3. Back			: To go back to the first option selector, i just let the program loop by 
+					  echoing empty strings and the program will loop back to the top.
+	5. Back			: Same implementation with no 4 back, but with exit, not echo so that the loop and 
+				  the program will stop.
+
+
+
+Continue Function -> to wait for user to press enter and redo the loop at the end of every command except back.
